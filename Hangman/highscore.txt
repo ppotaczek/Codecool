@@ -1,13 +1,1 @@
-roman|24|2|TBILISI|
-tomasz|9|1|BRUSSELS|
-pawel|19|1|CHISINAU|
-pawel|7|1|ROME|
-roman|55|8|BAKU|
-czarek|13|1|ZAGREB|
-czarek|19|1|NICOSIA|
-mieciu|18|1|CHISINAU|
-bartek12|15|1|VATICAN|
-dziadek|59|1|PARIS|
-milek|26|4|BERN|
-jay|39|7|PRISTINA|
-bartosz|29|3|ANDORRA|
+

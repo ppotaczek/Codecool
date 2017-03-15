@@ -1,262 +1,190 @@
-def game():
-    import random,sys,time
-    capitals=[]
-    used_letters=[]
-    scores=[]
-    l=0
-    with open("stolice.txt", "r") as file1: # Import capitals
-        capitals=file1.read().splitlines()
-
-    random_capital=(random.randint(1,len(capitals))) # Pick random capital
-    word=(capitals[random_capital-1])
-    word=word.upper()
-    mark="_"*len(word)
-    life = (
-    """
-    _______
-    ||    |
-    ||
-    ||
-    ||
-    ||
-    ||
-    ||
-    ||
-_5__||________
-    """,
-    """
-    _______
-    ||    |
-    ||    O
-    ||
-    ||
-    ||
-    ||
-    ||
-    ||
-_4__||_________
-    """,
-    """
-    _______
-    ||    |
-    ||    O
-    ||  --+--
-    ||
-    ||
-    ||
-    ||
-    ||
-_3__||_________
-    """,
-    """
-    _______
-    ||    |
-    ||    O
-    ||  /-+-\\
-    || /  |  \\
-    ||
-    ||
-    ||
-    ||
-_2__||_________
-    """,
-    """
-    _______
-    ||    |
-    ||    O
-    ||  /-+-\\
-    || /  |  \\
-    ||   / \\
-    ||  /   \\
-    ||
-    ||
-_1__||_________
-    """
-    ,
-    """
-    _______
-    ||    |
-    ||    @
-    ||  /-+-\\
-    || |  |  |
-    ||   / \\
-    ||  |   |
-    ||
-    ||
-_0__||_________
-    """
-    ,
-    """
-    _______
-    ||    |
-    ||    @
-    ||  /-+-\\
-    || |  |  |
-    ||   / \
-    ||  |   |
-    ||
-    ||
-_0__||_________
-    """)
-    print ("\n"*5)
-    print('''
-          _==/           i     i           \==_
-         /XX/            |\___/|            \XX\\
-       /XXXX\            | 0,0 |            /XXXX\\
-      |XXXXXX\_         _| --- |_         _/XXXXXX|
-     XXXXXXXXXXXxxxxxxxXXX     XXXxxxxxxxXXXXXXXXXXX
-    |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
-    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
-     XXXXXX/^^^^"\XXXXXXXXXXXXXXXXXXXXX/^^^^^\XXXXXX
-      |XXX|       \XXX/^^\XXXXX/^^\XXX/       |XXX|
-        \XX\       \X/    \XXX/    \X/       /XX/
-           "\       "      \X/      "       /"
-    ''')
-    print ("        ***WELCOME TO EVIL SKYNET! Hahahahaha***") # Intro
-    print ()
-    time.sleep(3)
-    print ()
-    print ("         Today I'll destroy one European capital!")
-    print ("               GUESS which or DIE!!!")
-    time.sleep(1)
-    print ("       Hahahahahahahahahahahahahahahahahahahahahaha")
-    time.sleep(1)
-    start_time = time.time() # start time
-    steps=0                  # start steps
-    print ("\n"*2)
-    print ("                    <?>",mark,"<?>")
-    print ()
-    print ("                                                TEST: ",word) # correct answer, only for test.
-    print ("Your life:", life[l])
+import random
+import sys
+import time
 
 
-    while l<5: # If you are not dead
-        while mark!=word: # If you didn't win yet
-            if l>=5:
+class Load:
+    def file(name):
+        with open(name+".txt", "r") as f:
+            return f.read()
+
+    def life(num):
+        with open("life" + str(num) + ".txt", "r") as f:
+            return f.read()
+
+    def capitals():
+        with open("capitals.txt", "r") as file1:
+            return file1.read().splitlines()
+
+
+class Game:
+    def random_capital_number(metropolies):
+        return random.randint(1, len(metropolies))
+
+    def greeting(encrypted, answer, essentiality):
+        print ("\n"*5)
+        print(Load.file("welcome"))
+        print ("        ***WELCOME TO EVIL SKYNET! Hahahahaha***") # Intro
+        print ()
+        time.sleep(3)
+        print ()
+        print ("         Today I'll destroy one European capital!")
+        print ("               GUESS which or DIE!!!")
+        time.sleep(1)
+        print ("       Hahahahahahahahahahahahahahahahahahahahahaha")
+        time.sleep(1)
+        print ("\n"*2)
+        print ("                    <?>",encrypted,"<?>")
+        print ()
+        # print ("                                                TEST: ", answer) # correct answer, only for test.
+        print(Load.life(essentiality))
+        print ("Your life:", essentiality)
+
+    def all_word(answer, essentiality):
+        all_word = input("What is the answer? ")
+        all_word = all_word.upper()
+
+        if all_word != answer:
+            print ("WRONG!!!")
+            essentiality = essentiality - 2
+            if essentiality < 0:
+                essentiality = 0
+            print(Load.life(essentiality))
+            print("Your life:", essentiality)
+        elif all_word == answer:
+            answer = all_word
+            return False
+
+    def letter(answer, marker, essentiality, used_letters):
+        guess = input("Choose a letter: ")
+        guess = guess.upper()
+
+        if guess in answer and len(guess) < 2: # If letter is correct
+            return Game.correct_letter(answer, marker, guess, essentiality)
+
+        elif guess not in answer or guess > 2: # If letter is incorrect
+            Game.incorrect_letter(guess, essentiality, used_letters)
+            return marker, essentiality-1
+
+    def correct_letter(correct_answer, marker, guess, essentiality):
+        time.sleep(1)
+        print ("YESSS my presious!", guess, "is correct.")
+        print()
+        marker_list = list(marker)
+
+        for i in range(len(correct_answer)):
+            if guess == correct_answer[i]:
+                marker_list[i] = guess
+
+        marker = ''.join(marker_list)
+        print ("                    <?>", marker, "<?>")
+        print("Your life:", essentiality)
+        return marker, essentiality
+
+    def incorrect_letter(guess, essentiality, used_letters):
+        time.sleep(1)
+        print ("Not this time!")
+        print ()
+        essentiality = essentiality - 1
+        print (Load.life(essentiality))
+        print("Your life:", essentiality)
+        numbers = ("0,1,2,3,4,5,6,7,8,9")
+
+        if len(guess) < 2 and guess not in used_letters and guess not in numbers: # Add wrong letter to used_letters list
+            used_letters.append(guess)
+
+    def win_game(answer, amount, start_time, steps):
+        print ()
+        print ("                           OH, NO! YOU WIN.")
+        time.sleep(1)
+        print ("                     YOU ARE SMARTER THAN YOU LOOK...")
+        time.sleep(1)
+        print ("                           YOU SAVED", answer)
+        print (Load.file("win"))
+
+        time_guess = (time.time() - start_time)
+        time_guess = round(time_guess)
+        name = input("What is your name? ")
+        print ()
+        print (name+",","you are a hero in", answer)
+        print ("YOUR TIME: ", time_guess, "seconds")
+        print ("YOUR STEPS:", steps)
+        print ("Congratulations!!!")
+        print ()
+
+        Game.highscore(name, time_guess, amount, answer)
+
+    def highscore(name, all_time, amount, answer):
+        file1 = open("highscore.txt", "a") # Export highscores to file
+        for el in name, all_time, amount, answer:
+            file1.write(str(el)+"|")
+        file1.write("\n")
+        file1.close()
+
+    def lose_game(answer):
+        print ("\n"*2) # If you are dead
+        print ("             GAME OVER! YOU ARE DEAD! HAHAHAHA")
+        time.sleep(3)
+        print ("                ", answer, "IS DESTROYED!!!")
+        print (Load.file("lose"))
+
+    def play_again():
+        while True:
+            again = input("Do you want to play again? yes/no ")
+            if again == "yes":
+                Main.game()
+            elif again == "no":
+                sys.exit()
+            else:
+                print ("I do not understand! Type again, please.")
+
+
+class Main:
+    def game():
+        capitals = Load.capitals()
+        used_letters = []
+        scores = []
+        life = 5
+        steps = 0
+        capital_number = Game.random_capital_number(capitals)
+        word = (capitals[capital_number-1])
+        word = word.upper()
+        mark = "_" * len(word)
+        start_time = time.time()
+
+        Game.greeting(mark, word, life)
+
+        while True:
+            if life < 1:
                 break
+
+            if word == mark:
+                break
+
             print ("Wrong letters:", used_letters)
             print ()
-            letter_or_word=input("letter(1) or word(2)?: ")
+            l_or_w = input("letter(1) or word(2)?: ") # Letter or word
 
-            if letter_or_word=="2": # Add word
-                all_word=input("What is the answer? ")
-                all_word=all_word.upper()
-                steps+=1
-                if all_word!=word:
-                    print ("WRONG!!!")
-                    l=l+2
-                    print("Your life:", life[l])
-                else:
-                    word=all_word
+            if l_or_w == "2":
+                steps += 1
+                if Game.all_word(word, life) == False:
                     break
-            elif letter_or_word=="1": # Add letter
-                guess=input("Choose a letter: ")
-                guess=guess.upper()
-                new_mark=""
-                steps+=1
-                if guess in word and len(guess)<2: # If letter is correct
-                    time.sleep(1)
-                    print ("YESSS my presious!", guess, "is correct.")
-                    print()
-                    for i in range(len(word)):
-                        if guess==word[i]:
-                            new_mark+=guess
-                        else:
-                            new_mark+=mark[i]
-                    mark=new_mark
-                    print ("                    <?>",new_mark,"<?>")
-                    print("Your life:", life[l])
-                elif guess not in word or guess>2: # If letter is incorrect
-                    time.sleep(1)
-                    print ("Not this time!")
-                    print ()
-                    print ("                    <?>",mark,"<?>")
-                    print()
-                    l=l+1
-                    print("Your life:", life[l])
-                    numbers=("0,1,2,3,4,5,6,7,8,9")
-                    if len(guess)<2 and guess not in used_letters and guess not in numbers: # Add wrong letter to used_letters list
-                        used_letters.append(guess)
-            elif letter_or_word!="1" or letter_or_word=="2":
+                else:
+                    life = life - 2
+
+            elif l_or_w == "1":
+                steps += 1
+                mark, life = Game.letter(word, mark, life, used_letters)
+
+            elif l_or_w != "1" or l_or_w == "2":
                 print ("I do not understand! Type it again.")
 
-        if l<5:
-            print ()
-            print ("                           OH, NO! YOU WIN.")
-            time.sleep(1)
-            print ("                     YOU ARE SMARTER THAN YOU LOOK...")
-            time.sleep(1)
-            print ("                           YOU SAVED", word)
-            print ('''
-                  _==/          __     __          \==_
-                 /XX/            |\___/|            \XX\\
-               /XXXX\            | 0,0 |            /XXXX\\
-              |XXXXXX\_         _|  O  |_         _/XXXXXX|
-             XXXXXXXXXXXxxxxxxxXXX     XXXxxxxxxxXXXXXXXXXXX
-            |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
-             XXXXXX/^^^^"\XXXXXXXXXXXXXXXXXXXXX/^^^^^\XXXXXX
-              |XXX|       \XXX/^^\XXXXX/^^\XXX/       |XXX|
-                \XX\       \X/    \XXX/    \X/       /XX/
-                   "\       "      \X/      "       /"
-            ''')
+        if life > 0:
+            Game.win_game(word, steps, start_time, steps)
 
-            time_guess = (time.time() - start_time)
-            time_guess = round(time_guess)
-            name=input("What is your name? ")
-            print ()
-            print (name+",","you are a hero in", word)
-            print ("YOUR TIME: ", time_guess, "seconds")
-            print ("YOUR STEPS:", steps)
-            print ("Congratulations!!!")
-            print ()
+        elif life < 1:
+            Game.lose_game(word)
 
-            file1=open("highscore.txt", "a") # Export highscores to file
-            for el in name, time_guess, steps, word:
-                file1.write(str(el)+"|")
-            file1.write("\n")
-            file1.close()
+        Game.play_again()
 
-            while True: # One more time?
-                again=input("Do you want to play again? yes/no ")
-                if again=="yes":
-                    game()
-                elif again=="no":
-                    sys.exit()
-                else:
-                    print ("I do not understand! AGAIN!!!")
-
-    print ("\n"*2) # If you are dead
-    print ("             GAME OVER! YOU ARE DEAD! HAHAHAHA")
-    print ("Your life:", life[l])
-    time.sleep(3)
-    print ("                ",word,"IS DESTROYED!!!")
-    print ('''
-            )           )        (                   )
-          (                       )      )            .---.
-      )              (     .-""-.       (        (   /     \\
-     ( .-""-.  (      )   / _  _ \        )       )  |() ()|
-      / _  _ \   )        |(_\/_)|  .---.   (        (_ 0 _)
-      |(_)(_)|  ( .---.   (_ /\ _) /     \    .-""-.  |xxx|
-      (_ /\ _)   /     \   |v==v|  |<\ />|   / _  _ \ '---'
-       |wwww|    |(\ /)|(  '-..-'  (_ A _)   |/_)(_\|
-       '-..-'    (_ o _)  )  .---.  |===|    (_ /\ _)
-                  |===|  (  /     \ '---'     |mmmm|
-                  '---'     |{\ /}|           '-..-'
-                            (_ V _)
-                             |"""|
-                             '---'
-    ''')
-
-    while True:
-        again=input("Do you want to play again? yes/no ")
-        if again=="yes":
-            game()
-        elif again=="no":
-            sys.exit()
-        else:
-            print ("I do not understand! Type again, please.")
-
-game()
+Main.game()
